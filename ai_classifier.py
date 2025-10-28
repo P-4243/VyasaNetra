@@ -2,7 +2,7 @@ from google import genai
 from datetime import datetime
 
 # ✅ Initialize Gemini client
-client = genai.Client(api_key="AIzaSyCX26vePpgWwN1NikuKUUkUJ99d-asj5ew")
+client = genai.Client(api_key="")
 
 def interpret_medicine_info(ocr_text):
     """
@@ -30,3 +30,4 @@ def interpret_medicine_info(ocr_text):
         return response.text.strip()
     except Exception as e:
         return f"[AI Error] {e}"
+
