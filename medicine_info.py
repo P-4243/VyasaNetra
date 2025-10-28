@@ -13,11 +13,11 @@ def identify_medicine_info(text):
         "paracetamol": "used to reduce fever and relieve pain",
         "ibuprofen": "used for pain, fever, and inflammation",
         "amoxicillin": "an antibiotic for infections",
+        "dolo": "a common paracetamol-based fever reducer",
+        "crocin": "relieves pain and reduces fever",
         "cetirizine": "used for allergies and cold symptoms"
     }
-
     med_name = name.group(1).capitalize() if name else "Unknown medicine"
     med_expiry = expiry.group(1) if expiry else "Expiry date not found"
     med_use = use_case.get(med_name.lower(), "Purpose not identified")
-
     return f"{med_name}, {med_use}. Expiry: {med_expiry}"
