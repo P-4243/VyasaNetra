@@ -1,8 +1,11 @@
 from google import genai
 from datetime import datetime
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
 # ✅ Initialize Gemini client
-client = genai.Client(api_key="AIzaSyCX26vePpgWwN1NikuKUUkUJ99d-asj5ew")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
 
 def interpret_medicine_info(ocr_text):
     """
