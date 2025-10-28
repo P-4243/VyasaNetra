@@ -1,24 +1,22 @@
 from tkinter import *
-from voice_module import speak, listen, get_intent
-from camera_module import open_camera
-from ocr_module import extract_text_from_frame, analyze_text
-import pytesseract
-
-def capture_and_analyze(result_box):
-    frame = open_camera()
-    if frame is None:
-        return
-    speak("Image captured. Processing...")
-    text = extract_text_from_frame(frame, pytesseract)
-    analyze_text(text, result_box)
+from voice_module import speak, listen
+from camera_module import process_camera_image
 
 def start_voice_command(result_box):
     query = listen()
-    intent = get_intent(query)
-    if intent == "medicine_info":
-        capture_and_analyze(result_box)
+    if "medicine" in query:
+        speak("Okay, let's identify the medicine for you.")
+        result_box.delete(1.0, END)
+        result_box.insert(END, "🎤 Listening and processing medicine information...\n")
+        process_camera_image()
     else:
         speak("Sorry, I can only help with medicine details right now.")
+        result_box.insert(END, "❌ Unsupported voice command.\n")
+
+def capture_and_analyze(result_box):
+    result_box.delete(1.0, END)
+    result_box.insert(END, "📸 Opening camera...\n")
+    process_camera_image()
 
 def start_gui():
     root = Tk()

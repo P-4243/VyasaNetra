@@ -1,6 +1,4 @@
-from gui_module import start_gui
+from camera_module import process_camera_image
 
 if __name__ == "__main__":
-    img_path = upload_tablet_image()
-    if img_path:
-        print(f"Image path: {img_path}")
+    process_camera_image()

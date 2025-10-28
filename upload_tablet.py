@@ -1,40 +1,19 @@
-from tkinter import filedialog, Tk, Text, END
-from ocr_module import extract_text_from_image, analyze_text
-from tkinter import Tk, Text
+from ocr_module import extract_text_from_image
+from ai_classifier import interpret_medicine_info
+from voice_module import speak  # Optional voice feedback
 
-def upload_tablet_image():
-    # Hide the main Tkinter window (so only file dialog opens)
-    root = Tk()
-    root.withdraw()
+def upload_and_analyze():
+    image_path = input("Enter the image path: ")
 
-    # Open file chooser
-    image_path = filedialog.askopenfilename(
-        title="Select Medicine Image",
-        filetypes=[("Image Files", "*.png *.jpg *.jpeg *.bmp *.tiff")]
-    )
-
-    if not image_path:
-        print("❌ No image selected.")
-        return
-
-    print(f"✅ Selected image: {image_path}")
-
-    # Extract text from image
+    print("\n🔍 Extracting text from image...")
     text = extract_text_from_image(image_path)
-    print("\n--- Extracted Text ---\n")
-    print(text)
+    print("\n📝 Extracted Text:\n", text)
 
-    # Temporary text box to reuse analyze_text() function
-    temp_root = Tk()
-    temp_root.title("Tablet Info")
-    result_box = Text(temp_root, width=60, height=15)
-    result_box.pack(padx=10, pady=10)
+    print("\n🤖 Analyzing with Gemini AI...")
+    result = interpret_medicine_info(text)
 
-    # Analyze the OCR text (checks for expiry/manufacturing)
-    analyze_text(text, result_box)
-
-    temp_root.mainloop()
-
+    print("\n✅ AI Result:\n", result)
+    speak(result)  # Comment this out if not using voice output
 
 if __name__ == "__main__":
-    upload_tablet_image()
+    upload_and_analyze()

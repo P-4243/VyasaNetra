@@ -5,12 +5,22 @@ import speech_recognition as sr
 engine = pyttsx3.init()
 engine.setProperty('rate', 170)
 
+import time
+
 def speak(text):
-    print("Assistant:", text)
-    def run_speech():
+    try:
+        engine = pyttsx3.init()
         engine.say(text)
         engine.runAndWait()
-    threading.Thread(target=run_speech, daemon=True).start()
+        time.sleep(0.3)  # short pause between speeches
+        engine.stop()
+    except RuntimeError:
+        # If already running, reset the engine safely
+        time.sleep(0.5)
+        engine = pyttsx3.init()
+        engine.say(text)
+        engine.runAndWait()
+        engine.stop()
 
 def listen():
     r = sr.Recognizer()
