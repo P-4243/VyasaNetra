@@ -33,3 +33,4 @@ def interpret_medicine_info(ocr_text):
         return response.text.strip()
     except Exception as e:
         return f"[AI Error] {e}"
+
