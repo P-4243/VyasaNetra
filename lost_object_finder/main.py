@@ -1,4 +1,4 @@
-# main.py
+
 import cv2
 from object_detector import detect_objects
 from gemini_helper import describe_objects
@@ -13,7 +13,7 @@ def main():
 
     # Extract target object from voice command
     for word in ["find", "locate", "where", "my", "the"]:
-        command = command.replace(word, "")
+        command = command.replace(word, "")# It removes common filler words ("find", "my", etc.) to isolate the name of the object
     target_object = command.strip()
 
     if not target_object:
@@ -28,12 +28,13 @@ def main():
         return
 
     while True:
-        ret, frame = cap.read()
+        ret, frame = cap.read()#ret is a boolean indicating success
         if not ret:
             break
 
         frame, detected = detect_objects(frame)
-        cv2.imshow("Object Detection", frame)
+        #So, frame holds an image. second value returned (the list of object names) and assigns it to the detected variable.
+        cv2.imshow("Object Detection", frame)#Displays the frame in a window titled "Object Detection".
 
         if detected:
             print("Detected:", detected)
@@ -52,6 +53,8 @@ def main():
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+            #It takes a single character (like 'q') and returns its integer ASCII value
+
 
     speak("Stopping detection.")
     cap.release()

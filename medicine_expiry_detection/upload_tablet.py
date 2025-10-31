@@ -13,7 +13,7 @@ def upload_and_analyze():
     result = interpret_medicine_info(text)
 
     print("\n✅ AI Result:\n", result)
-    speak(result)  # Comment this out if not using voice output
+    speak(result) 
 
 if __name__ == "__main__":
     upload_and_analyze()

@@ -8,8 +8,8 @@ def speak(text):
         engine = pyttsx3.init()
         engine.setProperty('rate', 170)
         engine.say(text)
-        engine.runAndWait()
-        engine.stop()
+        engine.runAndWait() #Blocks further code execution until all the queued speech is finished
+        engine.stop() 
     except Exception as e:
         print(f"[Speech Error] {e}")
 

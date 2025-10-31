@@ -2,7 +2,7 @@ from google import genai
 from dotenv import load_dotenv
 import os
 load_dotenv()
-# ✅ Initialize Gemini Client
+
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def extract_text_from_image(image_path):
@@ -11,8 +11,8 @@ def extract_text_from_image(image_path):
     directly from the uploaded image.
     """
     # Read the image file
-    with open(image_path, "rb") as img_file:
-        image_bytes = img_file.read()
+    with open(image_path, "rb") as img_file:#opens the image file in read-binary mode
+        image_bytes = img_file.read() #eads all the bytes (raw data) of the image file into memory
 
     prompt = """
     You are an AI OCR and medicine-label reader.
@@ -23,7 +23,7 @@ def extract_text_from_image(image_path):
     """
 
     # ✅ Correct structure for google-genai
-    response = client.models.generate_content(
+    response = client.models.generate_content(#Starts API call to Gemini
         model="gemini-2.5-flash",
         contents=[
             {"role": "user", "parts": [
