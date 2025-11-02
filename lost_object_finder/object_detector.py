@@ -1,24 +1,35 @@
-
-import cv2 #While the detection itself is done by YOLO, OpenCV is used 
-#here to draw the visual feedback (the rectangles and text) onto the image frame.
+import cv2
 from ultralytics import YOLO
 
 # Load pretrained YOLOv8 model
-model = YOLO("yolov8n.pt") # 'n' stands for 'nano', which is the smallest and fastest version of the YOLOv8 models.
+model = YOLO("yolov8n.pt")  # 'n' = nano (lightweight, fast)
 
 def detect_objects(frame):
-    results = model(frame, stream=True) #for processing video streams.
+    """
+    Detects objects using YOLO and returns:
+    - frame with bounding boxes drawn
+    - detected_items: list of object names
+    - boxes_dict: dictionary mapping object name -> list of bounding boxes
+    """
+    results = model(frame, stream=True)
     detected_items = []
+    boxes_dict = {}
+
     for r in results:
         boxes = r.boxes
         for box in boxes:
             cls = int(box.cls[0])
-            name = model.names[cls] #This line translates the numeric class ID (cls) into a human-readable name.
-            detected_items.append(name) #Adds the readable name of the detected object to our list of detected_items
-            cv2.rectangle(frame, (int(box.xyxy[0][0]), int(box.xyxy[0][1])),
-                          (int(box.xyxy[0][2]), int(box.xyxy[0][3])), (0,255,0), 2)
-            cv2.putText(frame, name, (int(box.xyxy[0][0]), int(box.xyxy[0][1]) - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
-    return frame, list(set(detected_items))
-#set() first removes any duplicate detections before converting it back to a list
-#
+            name = model.names[cls]
+
+            # Extract bounding box coordinates
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+
+            detected_items.append(name)
+            boxes_dict.setdefault(name, []).append((x1, y1, x2, y2))
+
+            # Draw rectangle + label
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(frame, name, (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
+    return frame, list(set(detected_items)), boxes_dict
