@@ -3,29 +3,41 @@ import speech_recognition as sr
 
 def speak(text):
     """Speaks the given text aloud and prints it to console."""
-    print(f"\n[Assistant]: {text}")
+    print("\nAssistant:", text)
     try:
-        # Initialize inside the function to avoid 'runloop already started' errors
         engine = pyttsx3.init()
-        engine.setProperty('rate', 185) # Optimal speed for clear guidance
+        engine.setProperty('rate', 170)
         engine.say(text)
-        engine.runAndWait() 
+        engine.runAndWait() #Blocks further code execution until all the queued speech is finished
         engine.stop() 
     except Exception as e:
         print(f"[Speech Error] {e}")
 
 def listen():
-    """Listens to microphone input and returns recognized text."""
     r = sr.Recognizer()
+    r.energy_threshold = 300  # 🔥 helps in noisy rooms
+    r.dynamic_energy_threshold = True
+
     with sr.Microphone() as source:
-        # Reduced ambient noise duration to make it feel more responsive
-        r.adjust_for_ambient_noise(source, duration=0.5)
-        print("Listening for object name...")
+        print("Listening...")
+
+        r.adjust_for_ambient_noise(source, duration=1)  # 🔥 increase this
+        # r.pause_threshold = 1.2  # wait for user to finish speaking
+
         try:
-            audio = r.listen(source, timeout=5, phrase_time_limit=4)
-            text = r.recognize_google(audio, language="en-IN")
-            print(f"User said: {text}")
-            return text.lower().strip()
-        except Exception:
-            # If it fails, returning empty string lets main.py handle the default
+            audio = r.listen(source, timeout=8, phrase_time_limit=4)
+        except sr.WaitTimeoutError:
+            speak("I didn't hear anything.")
             return ""
+
+    try:
+        text = r.recognize_google(audio, language="en-US")  # 🔥 change this
+        print(f"You said: {text}")
+        return text.lower().strip()
+
+    except sr.UnknownValueError:
+        speak("Sorry, I couldn’t understand that clearly.")
+    except sr.RequestError:
+        speak("Network error. Please check your internet.")
+
+    return ""
