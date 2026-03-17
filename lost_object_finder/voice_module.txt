@@ -1,0 +1,28 @@
+# # voice_module.py
+# import speech_recognition as sr
+# import time
+# from voice_helper import wait_until_speech_done
+
+# def listen_for_command(timeout=6, phrase_time_limit=6):
+#     """
+#     Wait for any TTS to finish, then record the user's voice.
+#     Returns recognized text (lowercase) or empty string.
+#     """
+#     # Wait a short moment for any ongoing TTS to finish (safe-guard)
+#     wait_until_speech_done(timeout=5)  # blocks until speak() finishes (or 5s)
+
+#     r = sr.Recognizer()
+#     with sr.Microphone() as source:
+#         # reduce false starts
+#         r.adjust_for_ambient_noise(source, duration=0.6)
+#         try:
+#             audio = r.listen(source, timeout=timeout, phrase_time_limit=phrase_time_limit)
+#         except sr.WaitTimeoutError:
+#             return ""
+#     try:
+#         text = r.recognize_google(audio)
+#         return text.lower().strip()
+#     except sr.UnknownValueError:
+#         return ""
+#     except sr.RequestError:
+#         return ""
