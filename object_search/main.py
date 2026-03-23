@@ -23,7 +23,7 @@ SCAN_INTERVAL = 3
 last_speech_time = time.time()
 last_direction = ""
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
 
 speak(f"Searching for {TARGET_OBJECT}. Please rotate slowly.")
 
