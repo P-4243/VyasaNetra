@@ -3,9 +3,10 @@ import tempfile
 import os
 import time
 
-from voice_module import speak
-from ocr_module import extract_text_from_image
-from ai_classifier import interpret_medicine_info
+from medicine_expiry_detection.voice_module import speak
+# from ocr_module import extract_text_from_image
+from medicine_expiry_detection.ocr_module import extract_text_from_image
+from medicine_expiry_detection.ai_classifier import interpret_medicine_info
 
 
 # ------------------ ALIGNMENT CHECK ------------------
