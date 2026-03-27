@@ -24,7 +24,7 @@ def run_object_search():
 
     cap = cv2.VideoCapture(2)
 
-    speak(f"Searching for {TARGET_OBJECT}. Please rotate slowly.")
+    speak(f"Searching for {TARGET_OBJECT}. Rotate slowly.")
 
     try:
         while cap.isOpened():
@@ -88,7 +88,7 @@ def run_object_search():
             if not found_in_frame:
                 current_time = time.time()
                 if current_time - last_speech_time > SCAN_INTERVAL:
-                    speak("Keep scanning slowly.")
+                    speak("Keep scanning.")
                     last_speech_time = current_time
 
             cv2.imshow("Object Finder", frame)

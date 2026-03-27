@@ -9,11 +9,10 @@ from medicine_expiry_detection.camera_module import process_camera_image
 # ------------------ MENU ------------------
 
 def show_menu():
-    speak("Welcome to VyasNetra.")
-    speak("Say 1 or say object search.")
-    speak("Say 2 or say payment assistant.")
-    speak("Say 3 or say currency identification.")
-    speak("Say 4 or say medicine detection.")
+    speak("Say 1 for object search.")
+    speak("Say 2 for wallet management.")
+    speak("Say 3 for payment assistence")
+    speak("Say 4 for medicine expiry detection.")
     speak("Say exit to close the app.")
 
 
@@ -25,7 +24,7 @@ def get_choice():
         print("Command received:", command)
 
         if not command:
-            speak("Please say your choice again.")
+            speak("Say your choice again.")
             continue
 
         command = command.lower()
@@ -46,8 +45,8 @@ def get_choice():
         elif any(word in command for word in ["exit", "stop", "quit"]):
             return "exit"
 
-        else:
-            speak("I did not understand. Try again.")
+        # else:
+        #     speak("I did not understand. Try again.")
 
     return None
 
@@ -66,8 +65,9 @@ def main():
             run_object_search()
 
         elif choice == 2:
-            speak("Starting payment assistant.")
-            run_money_detection()
+            speak("Starting wallet management")
+            from money_detection.main import manage_wallet
+            manage_wallet()
 
         elif choice == 3:
             speak("Payment assistant starting.")

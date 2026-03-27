@@ -43,7 +43,7 @@ def is_medicine_aligned(frame):
 
 # ------------------ CAMERA ------------------
 def open_camera():
-    speak("Opening camera. Please hold the medicine label in front.")
+    speak("Opening camera. Hold the medicine label in front.")
 
     cap = cv2.VideoCapture(2)
 
@@ -77,7 +77,7 @@ def open_camera():
             aligned_frames = 0
 
             if time.time() - last_feedback_time > 3:
-                speak("Please align the medicine properly in the center")
+                speak("Align the medicine properly in the center")
                 last_feedback_time = time.time()
 
             cv2.putText(display_frame, "Align properly",

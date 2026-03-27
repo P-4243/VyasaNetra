@@ -11,7 +11,13 @@ wallet = {
     500: 0
 }
 
+def get_wallet_total(wallet):
+    return sum(note * count for note, count in wallet.items())
+
+
 # ------------------ HELPER ------------------
+
+from itertools import combinations
 
 def suggest_payment(wallet, amount):
     available = []
@@ -19,13 +25,14 @@ def suggest_payment(wallet, amount):
     for note, count in wallet.items():
         available += [note] * count
 
-    available.sort()
-
-    for val in available:
-        if val >= amount:
-            return val
+    # Try all combinations
+    for r in range(1, len(available) + 1):
+        for combo in combinations(available, r):
+            if sum(combo) >= amount:
+                return list(combo)
 
     return None
+
 
 # ------------------ PARSE AMOUNT ------------------
 
@@ -40,22 +47,22 @@ def parse_amount(text):
         "five hundred": 500
     }
 
+    if not text:
+        return None
+
     text = text.lower().strip()
 
     if text.isdigit():
         return int(text)
 
-    if text in words_to_numbers:
-        return words_to_numbers[text]
-
-    return None
+    return words_to_numbers.get(text, None)
 
 
 # ------------------ MAIN FLOW ------------------
 
 def run_money_detection():
 
-    # ------------------ GET AMOUNT ------------------
+    # -------- GET AMOUNT --------
     while True:
         speak("How much do you want to pay?")
         command = listen()
@@ -66,44 +73,46 @@ def run_money_detection():
             speak(f"You said {amount} rupees.")
             break
 
-        speak("Sorry, I didn't understand. Please say the amount again.")
+        speak("Sorry, I didn't understand. Please say again.")
 
-    # ------------------ CHECK WALLET ------------------
-    suggested = suggest_payment(wallet, amount)
+    # -------- CHECK WALLET --------
+    suggested_notes = suggest_payment(wallet, amount)
 
-    if suggested is None:
+    if suggested_notes is None:
         speak("You do not have enough money.")
         return
 
-    # ------------------ SUGGEST PAYMENT ------------------
-    if suggested != amount:
-        speak(f"You don’t have exact amount. Give {suggested} rupees.")
-    else:
-        speak(f"You can give {suggested} rupees.")
+    total_given = sum(suggested_notes)
 
-    # ------------------ VERIFY NOTE ------------------
-    while True:
-        speak(f"Please show {suggested} rupee note.")
+    speak(f"Give notes: {suggested_notes}. Total {total_given} rupees.")
 
-        detected = detect_currency()
+    # -------- VERIFY EACH NOTE --------
+    for note in suggested_notes:
+        while True:
+            speak(f"Please show {note} rupee note.")
+            detected = detect_currency()
 
-        if detected is None:
-            speak("Could not detect note. Try again.")
-            continue
+            if detected is None:
+                speak("Could not detect. Try again.")
+                continue
 
-        if detected == suggested:
-            speak("Correct note. You can give it to the shopkeeper.")
-            wallet[suggested] -= 1
-            break
-        else:
-            speak(f"This is {detected} rupees. Please show {suggested} rupees.")
+            if detected == note:
+                speak("Correct note.")
+                
+                if wallet.get(note, 0) > 0:
+                    wallet[note] -= 1
+                break
+            else:
+                speak(f"This is {detected}. Please show {note} rupees.")
 
-    # ------------------ HANDLE CHANGE ------------------
-    change = suggested - amount
+    speak("You can give the money.")
+
+    # -------- HANDLE CHANGE --------
+    change = total_given - amount
 
     if change > 0:
-        speak(f"You should receive {change} rupees as change.")
-        speak("Please show the change one note at a time.")
+        speak(f"You should receive {change} rupees.")
+        speak("Show change one note at a time.")
 
         received = 0
 
@@ -115,21 +124,59 @@ def run_money_detection():
                 continue
 
             received += detected
-            speak(f"Detected {detected} rupees. Total received {received}.")
+            speak(f"Detected {detected}. Total received {received}.")
 
-            # Update wallet
-            if detected in wallet:
-                wallet[detected] += 1
-            else:
-                wallet[detected] = 1
+            wallet[detected] = wallet.get(detected, 0) + 1
 
-        # ------------------ VALIDATION ------------------
+            if received > change:
+                speak("Extra money detected. Stop.")
+                break
+
+        # -------- VALIDATION --------
         if received == change:
-            speak("You received correct change.")
+            speak("Correct change received.")
         elif received > change:
             speak("You received extra money.")
         else:
-            speak("You received less money. Please check.")
+            speak("You received less money.")
 
-    # ------------------ FINAL WALLET ------------------
     print("Updated Wallet:", wallet)
+
+
+# ------------------ MANAGE WALLET ------------------
+
+def manage_wallet():
+    total = get_wallet_total(wallet)
+    speak(f"Your wallet has {total} rupees.")
+
+    while True:
+        speak("Do you want to add money? Say yes or no.")
+        response = listen()
+
+        if not response:
+            speak("I did not hear anything.")
+            continue
+
+        if "yes" in response:
+            speak("Show the note to add.")
+
+            detected = detect_currency()
+
+            if detected is None:
+                speak("Could not detect note.")
+                return
+
+            wallet[detected] = wallet.get(detected, 0) + 1
+
+            speak(f"{detected} rupees added.")
+
+            new_total = get_wallet_total(wallet)
+            speak(f"Now wallet has {new_total} rupees.")
+            break
+
+        elif "no" in response or "exit" in response:
+            speak("Returning to main menu.")
+            break
+
+        else:
+            speak("Say yes or no.")

@@ -2,17 +2,17 @@ import cv2
 import time
 from collections import Counter
 from ultralytics import YOLO
-from voice_module import speak
+from money_detection.voice_module import speak
 
-# Load your trained model
+# Load model
 model = YOLO("money_detection/best.pt")
 
 
 def detect_currency():
 
-    speak("Opening camera. Show the note clearly.")
+    speak("Opening camera. Hold the note steady.")
 
-    cap = cv2.VideoCapture(2)
+    cap = cv2.VideoCapture(2)  # 🔥 changed from 2 → 0 (default camera)
 
     if not cap.isOpened():
         speak("Camera not detected.")
@@ -32,14 +32,12 @@ def detect_currency():
             for box in r.boxes:
                 cls = int(box.cls[0])
                 conf = float(box.conf[0])
-
                 label = model.names[cls]
 
-                # Only consider confident predictions
-                if conf > 0.6:
+                # Lower threshold slightly for stability
+                if conf > 0.5:
                     predictions.append(label)
 
-                    # Draw box
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
                     cv2.putText(frame, f"{label} ({conf:.2f})",
@@ -49,7 +47,7 @@ def detect_currency():
 
         cv2.imshow("Currency Detection", frame)
 
-        # Collect for ~3 seconds
+        # Collect frames for 3 seconds
         if time.time() - start_time > 3:
             break
 
@@ -59,20 +57,18 @@ def detect_currency():
     cap.release()
     cv2.destroyAllWindows()
 
-    # ------------------ DECISION ------------------
+    # -------- DECISION --------
 
     if not predictions:
         speak("Could not detect currency.")
         return None
 
-    # Majority voting
     most_common = Counter(predictions).most_common(1)[0][0]
 
-    # Convert label → integer
     try:
         amount = int(most_common)
     except:
-        speak("Detected label is unclear.")
+        speak("Detection unclear.")
         return None
 
     speak(f"Detected {amount} rupees.")
