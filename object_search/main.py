@@ -5,7 +5,7 @@ from voice_module import speak, listen
 
 
 def run_object_search():
-    model = YOLO('yolov8n.pt')
+    # model = YOLO('yolov8n.pt')
     target_reached = False
 
     speak("What object do you want to search for?")
@@ -23,16 +23,16 @@ def run_object_search():
     last_direction = ""
 
     cap = cv2.VideoCapture(2)
-
+    model = YOLO('yolov8n.pt')
     speak(f"Searching for {TARGET_OBJECT}. Rotate slowly.")
 
     try:
         while cap.isOpened():
-            ret, frame = cap.read()
+            ret, frame = cap.read()#Captures one frame
             if not ret:
                 break
 
-            h, w, _ = frame.shape
+            h, w, _ = frame.shape#Get height & width of frame
             results = model(frame, stream=True, verbose=False)
 
             found_in_frame = False
@@ -46,7 +46,7 @@ def run_object_search():
                         found_in_frame = True
 
                         x1, y1, x2, y2 = box.xyxy[0]
-                        center_x = (x1 + x2) / 2
+                        center_x = (x1 + x2) / 2#Get bounding box + center position
 
                         if center_x < w / 3:
                             direction = "Move left"

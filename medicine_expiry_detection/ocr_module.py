@@ -12,7 +12,7 @@ def extract_text_from_image(image_path):
     """
     # Read the image file
     with open(image_path, "rb") as img_file:#opens the image file in read-binary mode
-        image_bytes = img_file.read() #eads all the bytes (raw data) of the image file into memory
+        image_bytes = img_file.read() #reads all the bytes (raw data) of the image file into memory
 
     prompt = """
     You are an AI OCR and medicine-label reader.
