@@ -1,0 +1,8 @@
+pyttsx3
+SpeechRecognition
+PyAudio
+google-genai
+python-dotenv
+opencv-python
+ultralytics
+pytesseract
