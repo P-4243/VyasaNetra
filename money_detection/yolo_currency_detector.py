@@ -5,15 +5,22 @@ from ultralytics import YOLO
 from money_detection.voice_module import speak
 
 # Load model
-model = YOLO("money_detection/best.pt")
+import os
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "MY_FINAL_CURRENCY_MODEL.pt")
+model = YOLO(MODEL_PATH)
 
 
 def detect_currency():
-
     speak("Opening camera. Hold the note steady.")
 
-    cap = cv2.VideoCapture(2)  # 🔥 changed from 2 → 0 (default camera)
-
+    # Try multiple indices to find an available camera
+    for index in [0, 1, 2]:
+        cap = cv2.VideoCapture(index)
+        if cap.isOpened():
+            break
+    else:
+        cap = None
+        
     if not cap.isOpened():
         speak("Camera not detected.")
         return None

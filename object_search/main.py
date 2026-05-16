@@ -9,8 +9,8 @@ def run_object_search():
     FOCAL_LENGTH = 600.0   # Calibrated focal length of your camera
     CM_PER_STEP = 60.0     # Average step length in cm
     
-    cap = cv2.VideoCapture(1)
-    model = YOLO('yolov8n.pt')
+    cap = cv2.VideoCapture(2)
+    model = YOLO(r"C:\Users\sophi\OneDrive\Desktop\FALTU🗑️\👻Project\VyasNetra App\object_search\best.pt")
     
     speak("What object do you want to search for?")
     TARGET_OBJECT = ""
